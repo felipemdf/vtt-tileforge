@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, stag]
+  pull_request:
+    branches: [main, stag]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'tileforge-backend/**'
+            frontend:
+              - 'tileforge-frontend/**'
+
+  backend:
+    name: Backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tileforge-backend
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: tileforge-backend/package-lock.json
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test -- --runInBand
+
+  frontend:
+    name: Frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tileforge-frontend
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: tileforge-frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build

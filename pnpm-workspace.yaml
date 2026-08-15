@@ -1,10 +1,6 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-
-minimumReleaseAge: 0
+  - "apps/*"
+  - "packages/*"
 
 allowBuilds:
-  esbuild: true
-  lightningcss: true
   unrs-resolver: true

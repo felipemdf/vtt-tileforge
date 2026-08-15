@@ -1,9 +1,6 @@
-node_modules/
-dist/
-build/
-.turbo/
+node_modules
+dist
+.output
+.turbo
 .env
-.env.local
 *.log
-.DS_Store
-coverage/

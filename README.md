@@ -280,11 +280,7 @@ Monorepo (Turborepo):
 ```text
 apps/
   web/              TanStack Start — plataforma e UI da mesa
-  api/              NestJS — HTTP + WebSocket
-  worker/           NestJS — consumidores RabbitMQ
-packages/
-  shared/           tipos, contratos de eventos, DTOs
-  game-engine/      regras puras
+  api/              NestJS — HTTP + WebSocket + worker (src/worker.ts)
 infra/
   docker/           Compose local
   cdk/              IaC AWS
@@ -354,7 +350,7 @@ Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`
 - Módulos por domínio, não por tipo de arquivo genérico
 - Feature flags para superfície (`mobilePlay`, `forum`, `fog`)
 - Observabilidade: logs estruturados com `traceId`; na fila, `event_id` e `routing_key`
-- Testes: unitários no `game-engine`; contrato de payload da fila; e2e da plataforma depois que houver UI
+- Testes: unitários nas regras de jogo; contrato de payload da fila; e2e da plataforma depois que houver UI
 
 ### Queries
 
